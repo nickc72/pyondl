@@ -1,0 +1,270 @@
+/* Modern PyonDL Styling & Reader Modes */
+
+:root {
+  --bg-main: #0c0d14;
+  --bg-card: #151724;
+  --bg-card-hover: #1e2133;
+  --accent-primary: #6366f1;
+  --accent-glow: rgba(99, 102, 241, 0.35);
+  --accent-secondary: #ec4899;
+  --border-color: rgba(255, 255, 255, 0.08);
+}
+
+body {
+  background-color: var(--bg-main);
+  color: #e2e8f0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f1019;
+}
+::-webkit-scrollbar-thumb {
+  background: #2b2e44;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #404464;
+}
+
+/* Glassmorphism Cards */
+.glass-panel {
+  background: rgba(21, 23, 36, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+}
+
+.glass-nav {
+  background: rgba(12, 13, 20, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Terminal Log Window */
+.terminal-window {
+  background-color: #07080c;
+  border: 1px solid #1f2235;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Smooth transitions */
+.transition-smooth {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------------- Reader Styles & Wide Mode ---------------- */
+
+#reader-modal {
+  transition: opacity 0.25s ease;
+  user-select: none;
+}
+
+.reader-viewport {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  outline: none;
+}
+
+/* Container for Single & Double Page Views */
+.reader-page-container {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* In Fit-Wide and Original modes, align to top so top of page is always visible */
+.fit-wide .reader-page-container,
+.fit-original .reader-page-container {
+  justify-content: flex-start !important;
+}
+
+/* In Fit-Screen and Fit-Height modes, center vertically if image is smaller than viewport */
+.fit-screen .reader-page-container,
+.fit-height .reader-page-container {
+  justify-content: center !important;
+}
+
+/* Fit Modes for Single & Double Page */
+
+/* FIT WIDE: Stretches/scales image to 100% viewport width */
+.fit-wide .reader-page-img {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  min-width: 100vw !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+.fit-wide .reader-viewport {
+  align-items: flex-start !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* FIT SCREEN (Contain): Constrains to both viewport width & height */
+.fit-screen .reader-page-img {
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain;
+  margin: auto;
+  display: block;
+}
+
+/* FIT HEIGHT: 100% viewport height */
+.fit-height .reader-page-img {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  width: auto !important;
+  max-width: none !important;
+  object-fit: contain;
+  margin: auto;
+  display: block;
+}
+
+/* FIT ORIGINAL: 1:1 natural pixels */
+.fit-original .reader-page-img {
+  width: auto !important;
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: auto;
+  display: block;
+}
+
+/* Double Page Layout */
+.layout-double .double-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  gap: 4px;
+}
+
+.layout-double.fit-screen .reader-page-img {
+  max-width: 50vw !important;
+  max-height: 100vh !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain;
+}
+
+.layout-double.fit-wide .reader-page-img {
+  width: 50vw !important;
+  max-width: 50vw !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain;
+}
+
+.layout-double.fit-height .reader-page-img {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  width: auto !important;
+  object-fit: contain;
+}
+
+/* Webtoon / Continuous Vertical Scroll */
+.layout-webtoon .webtoon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 0;
+}
+
+.layout-webtoon .reader-viewport {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  align-items: flex-start !important;
+}
+
+.layout-webtoon.fit-wide .webtoon-img {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: auto !important;
+}
+
+.layout-webtoon.fit-screen .webtoon-img,
+.layout-webtoon.fit-height .webtoon-img {
+  width: auto !important;
+  max-width: 900px !important;
+  height: auto !important;
+}
+
+/* Reader Toolbar Overlay */
+.reader-toolbar {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(12, 13, 20, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.reader-toolbar.toolbar-hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.reader-bottombar.toolbar-hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Click Zones */
+.click-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 20;
+  cursor: pointer;
+}
+.click-zone-left {
+  left: 0;
+  width: 32%;
+}
+.click-zone-center {
+  left: 32%;
+  width: 36%;
+  cursor: default;
+}
+.click-zone-right {
+  right: 0;
+  width: 32%;
+}
+
+/* Pulsing Badge */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.8);
+  }
+}
+.glow-primary {
+  animation: pulseGlow 2.5s infinite;
+}
