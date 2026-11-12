@@ -69,10 +69,12 @@ def get_manga_root_and_title(chapter_dir: Path, downloads_dir: Path) -> Tuple[Pa
             manga_title = meta.get("manga") or meta.get("title") or meta.get("gallery_title") or chapter_dir.name
             chapter_title = "Complete"
         elif len(rel_parts) == 2:
+            # e.g. downloads/hitomi/4324575 Kit Bodega
             series_path = chapter_dir
             manga_title = meta.get("title") or meta.get("manga") or meta.get("gallery_title") or chapter_dir.name
             chapter_title = "Complete"
         else:
+            # e.g. downloads/mangadex/COSMOS/c010_ Eutal Eve
             series_path = downloads_dir / rel_parts[0] / rel_parts[1]
             manga_title = meta.get("manga") or meta.get("series") or meta.get("album") or rel_parts[1]
             if meta.get("title") and meta.get("chapter") is not None:
@@ -94,6 +96,8 @@ def get_manga_root_and_title(chapter_dir: Path, downloads_dir: Path) -> Tuple[Pa
             else:
                 chapter_title = meta.get("title") or chapter_dir.name
 
+    # If manga_title has numeric ID prefix and no explicit title was in metadata, clean it
+    # (e.g. "4324575 Kit Bodega" -> "Kit Bodega", "[4324575] Kit Bodega" -> "Kit Bodega")
     if not meta.get("title") and not meta.get("manga") and not meta.get("series"):
         cleaned = re.sub(r'^(?:\[\d+\]|\d+)\s*[-_]?\s*', '', manga_title).strip()
         if cleaned:
@@ -312,7 +316,7 @@ class LibraryManager:
         return False
 
     def create_sample_manga(self) -> str:
-        """Generate a sample 5-page demo comic inside downloads folder."""
+        """Generate a beautiful sample 5-page demo manga inside downloads folder."""
         sample_dir = self.downloads_dir / "PyonDL Manga Demo" / "Chapter 01 - The Journey Begins"
         sample_dir.mkdir(parents=True, exist_ok=True)
 
@@ -384,24 +388,32 @@ class LibraryManager:
             img = Image.new("RGB", (width, height), color=(18, 18, 24))
             draw = ImageDraw.Draw(img)
 
+            # Draw stylish header banner
             accent_hex = data["accent"].lstrip('#')
             accent_rgb = tuple(int(accent_hex[i:i+2], 16) for i in (0, 2, 4))
             
+            # Subtle gradient / card background
             draw.rectangle([40, 40, width - 40, height - 40], outline=accent_rgb, width=4)
             draw.rectangle([50, 50, width - 50, 220], fill=(28, 28, 38))
             draw.line([50, 220, width - 50, 220], fill=accent_rgb, width=3)
 
+            # Draw Page number badge
             page_num_str = f"PAGE {data['page']} / 5"
             draw.rectangle([width - 250, 70, width - 80, 115], fill=accent_rgb)
             draw.text((width - 235, 80), page_num_str, fill=(255, 255, 255))
 
+            # Title & Subtitle
             draw.text((80, 80), data["title"], fill=(255, 255, 255))
             draw.text((80, 140), data["subtitle"], fill=accent_rgb)
 
+            # Central illustration box
             draw.rectangle([100, 280, width - 100, 900], fill=(24, 24, 34), outline=(45, 45, 60), width=2)
+            
+            # Decorative shapes in central illustration box
             draw.ellipse([width//2 - 140, 420, width//2 + 140, 700], fill=(35, 35, 52), outline=accent_rgb, width=3)
             draw.text((width//2 - 90, 540), f"PANEL {data['page']}", fill=accent_rgb)
 
+            # Bullets / Instructions card
             draw.rectangle([100, 960, width - 100, 1600], fill=(25, 25, 35), outline=(45, 45, 60), width=2)
             draw.text((140, 1000), "HIGHLIGHTS & CONTROLS", fill=accent_rgb)
             draw.line([140, 1050, 450, 1050], fill=accent_rgb, width=2)
@@ -412,6 +424,7 @@ class LibraryManager:
                 draw.text((180, y_offset), bullet, fill=(230, 230, 240))
                 y_offset += 100
 
+            # Footer
             draw.text((width//2 - 100, height - 70), "PYONDL MANGA READER", fill=(120, 120, 140))
 
             file_path = sample_dir / f"{data['page']:03d}.png"

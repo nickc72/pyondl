@@ -1,14 +1,31 @@
 # Virtual environment
 .venv/
 venv/
+ENV/
+env/
 
 # Python cache & compiled files
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.pytest_cache/
 
-# Downloads directory
+# Downloads directory (keep folder structure via .gitkeep)
 downloads/*
 !downloads/.gitkeep
 
-# Logs & temp
+# IDE & Editor folders
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs & temporary files
 *.log
+*.tmp

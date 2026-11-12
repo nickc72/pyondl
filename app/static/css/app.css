@@ -1,4 +1,4 @@
-/* Modern PyonDL Styling & Reader Modes */
+/* Modern MangaDL Styling & Reader Modes */
 
 :root {
   --bg-main: #0c0d14;
@@ -103,7 +103,7 @@ body {
 
 /* Fit Modes for Single & Double Page */
 
-/* FIT WIDE: Stretches/scales image to 100% viewport width */
+/* FIT WIDE: Stretches/scales image to 100% viewport width! */
 .fit-wide .reader-page-img {
   width: 100vw !important;
   max-width: 100vw !important;

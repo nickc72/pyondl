@@ -29,7 +29,7 @@ Press **`F`** to toggle full-screen immersive mode. All browser bars and desktop
 ### 3. Three Reading Layouts (`M`)
 Cycle through reading layouts anytime by pressing **`M`**:
 - **Single Page Mode**: Standard reading with smart navigation zones (left side: prev, right side: next, center: toggle toolbar).
-- **Double Spread Mode**: Displays two pages side-by-side to replicate the feel of a physical manga volume or graphic novel.
+- **Double Spread Mode**: Displays two pages side-by-side to replicate the feel of a physical manga tankōbon or graphic novel.
 - **Continuous Webtoon (Long-Strip) Mode**: Smooth vertical scrolling with lazy loading and smart viewport rendering—ideal for Webtoons and Manhwa.
 
 ### 4. Smart Bookmarks & Exact Scroll Restoration (`B`)
@@ -69,7 +69,7 @@ Under the hood, PyonDL leverages [gallery-dl](https://github.com/mikf/gallery-dl
 - **Natural Chapter Ordering**: Chapters are sorted naturally (e.g., Chapter 1, Chapter 2, Chapter 10, Chapter 100).
 - **Search & Filter**: Search series by name or sort by Date, Title, Total Pages, or Folder Size.
 - **Direct Explorer / Finder Access**: Click the folder icon to reveal any manga directory directly in your operating system's native file manager (`explorer.exe` / `Finder` / `xdg-open`).
-- **Included Demo Comic**: Includes an auto-generated sample comic so you can explore all reader features right after cloning!
+- **Included Demo Comic**: Includes an auto-generated sample manga so you can explore all reader features right after cloning!
 
 ---
 
@@ -83,7 +83,7 @@ Under the hood, PyonDL leverages [gallery-dl](https://github.com/mikf/gallery-dl
 
 ### Option 1: 1-Click Launchers (Recommended)
 
-#### Windows:
+#### 🪟 Windows:
 1. Clone the repository:
    ```cmd
    git clone https://github.com/nickc72/pyondl.git
@@ -92,7 +92,7 @@ Under the hood, PyonDL leverages [gallery-dl](https://github.com/mikf/gallery-dl
 2. Double-click **`start.bat`** (or run `start.bat` in Command Prompt / PowerShell).
    - *It will automatically create the `.venv`, install all dependencies from `requirements.txt`, launch the server, and open your default browser!*
 
-#### Linux / macOS:
+#### 🐧 Linux / 🍎 macOS:
 1. Clone the repository:
    ```bash
    git clone https://github.com/nickc72/pyondl.git
@@ -201,10 +201,10 @@ pyondl/
 
 PyonDL supports downloads from any platform compatible with `gallery-dl`, including:
 
-- **Manga & Comics**: MangaDex, Webtoons, ComicK, Bato.to, etc.
-- **Imageboards & Art**: Danbooru, Gelbooru, Pixiv, Safebooru, Konachan, Yande.re, Sankaku.
-- **Social & Portfolios**: Reddit, Imgur, Twitter / X, DeviantArt, ArtStation, Flickr, Tumblr.
-- *And hundreds more extractors supported by gallery-dl.*
+- **Manga & Comics**: [MangaDex](https://mangadex.org), [Webtoons](https://www.webtoons.com), ComicK, Bato.to, etc.
+- **Imageboards & Art**: [Danbooru](https://danbooru.donmai.us), [Gelbooru](https://gelbooru.com), [Pixiv](https://www.pixiv.net), Safebooru, Konachan, Yande.re, Sankaku.
+- **Social & Portfolios**: [Reddit](https://reddit.com), [Imgur](https://imgur.com), [Twitter / X](https://x.com), DeviantArt, ArtStation, Flickr, Tumblr.
+- *And [hundreds more extractors](https://github.com/mikf/gallery-dl/blob/master/docs/supportedsites.md).*
 
 ---
 

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyonDL & Reader - Gallery-dl Web UI</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/static/css/app.css" />
+</head>
+<body class="bg-[#0b0c14] text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-40 glass-nav">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Logo & Title -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+          <i data-lucide="book-open" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-base tracking-tight bg-gradient-to-r from-white via-indigo-100 to-indigo-300 bg-clip-text text-transparent">PyonDL</span>
+            <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">gallery-dl</span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-medium">Downloader & Reader</p>
+        </div>
+      </div>
+
+      <!-- Center Tabs -->
+      <nav class="flex items-center space-x-1 sm:space-x-2 bg-slate-900/60 p-1 rounded-xl border border-slate-800">
+        <button data-tab-target="library" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all text-indigo-400 bg-slate-800/80 shadow-sm border border-slate-700/50">
+          <i data-lucide="library" class="w-4 h-4"></i>
+          <span>Library</span>
+        </button>
+        <button data-tab-target="downloader" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all text-slate-400 hover:text-slate-200">
+          <i data-lucide="download-cloud" class="w-4 h-4"></i>
+          <span>Downloader</span>
+        </button>
+        <button data-tab-target="sites" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-2 transition-all text-slate-400 hover:text-slate-200">
+          <i data-lucide="globe" class="w-4 h-4"></i>
+          <span>Supported Sites</span>
+        </button>
+      </nav>
+
+      <!-- Right Controls -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Live stream indicator badge -->
+        <span id="connection-status" class="hidden sm:flex px-2 py-0.5 text-xs font-medium rounded-full bg-slate-800 text-slate-400 border border-slate-700 items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          Ready
+        </span>
+
+        <!-- Keyboard Shortcuts Button -->
+        <button id="open-shortcuts-btn" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700/60" title="Keyboard Shortcuts (?)">
+          <i data-lucide="help-circle" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ==================== TAB 1: LIBRARY ==================== -->
+    <section data-tab-content="library" class="space-y-6">
+      <!-- Toolbar -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 glass-panel p-4 rounded-2xl">
+        <div class="flex items-center gap-3 flex-1 max-w-md">
+          <div class="relative w-full">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input id="library-search" type="text" placeholder="Search downloaded manga..." class="w-full pl-9 pr-4 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-colors" />
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Sort dropdown -->
+          <select id="library-sort" class="px-3 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+            <option value="date_desc">Latest Download</option>
+            <option value="title_asc">Title (A - Z)</option>
+            <option value="title_desc">Title (Z - A)</option>
+            <option value="pages_desc">Most Pages</option>
+            <option value="size_desc">Largest Size</option>
+          </select>
+
+          <!-- Refresh Button -->
+          <button id="refresh-library-btn" class="p-2 bg-slate-900/80 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-slate-300 transition-colors" title="Refresh Library">
+            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+          </button>
+
+          <!-- Sample Generator Button -->
+          <button id="create-sample-btn" class="px-3 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-colors">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            <span>Demo Manga</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Continue Reading Hero Banner (smart bookmark) -->
+      <div id="continue-reading-banner" class="hidden glass-panel p-4 rounded-2xl border border-indigo-500/40 bg-gradient-to-r from-indigo-950/40 via-purple-950/20 to-slate-900/60 shadow-xl">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="relative w-14 h-20 rounded-lg overflow-hidden flex-shrink-0 border border-slate-700 bg-slate-900 shadow">
+              <img id="resume-banner-cover" src="/static/placeholder.png" class="w-full h-full object-cover" />
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center gap-1">
+                  <i data-lucide="bookmark" class="w-3 h-3"></i> Resume Where You Left Off
+                </span>
+                <span id="resume-banner-time" class="text-[11px] text-slate-500 font-mono"></span>
+              </div>
+              <h3 id="resume-banner-title" class="font-bold text-slate-100 text-sm mt-1 truncate max-w-xs sm:max-w-md">Manga Title</h3>
+              <p id="resume-banner-details" class="text-xs text-indigo-300 mt-0.5 font-medium">Chapter 1 • Page 5</p>
+            </div>
+          </div>
+          <button id="resume-banner-btn" class="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-indigo-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all flex-shrink-0">
+            <i data-lucide="play" class="w-4 h-4 fill-white"></i>
+            <span>Resume Reading</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Status count header -->
+      <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+        <span id="library-item-count">Loading your collection...</span>
+        <span>Click any card to read</span>
+      </div>
+
+      <!-- Manga Cards Grid -->
+      <div id="library-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+        <!-- Rendered dynamically via app.js -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="library-empty" class="hidden flex flex-col items-center justify-center py-20 text-center space-y-4">
+        <div class="w-16 h-16 rounded-2xl bg-indigo-950/50 border border-indigo-800/40 flex items-center justify-center text-indigo-400">
+          <i data-lucide="book-open" class="w-8 h-8"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-slate-200">Your Library is Empty</h3>
+          <p class="text-xs text-slate-400 mt-1 max-w-sm">No manga or galleries downloaded yet. Click below to create a demo sample manga or go to the Downloader tab!</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="document.getElementById('create-sample-btn').click()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/25 transition-colors">
+            Create Demo Sample
+          </button>
+          <button onclick="window.app.switchTab('downloader')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold border border-slate-700 transition-colors">
+            Go to Downloader
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: DOWNLOADER ==================== -->
+    <section data-tab-content="downloader" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: Download Form & Presets (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-5">
+            <div class="flex items-center justify-between">
+              <h2 class="text-base font-bold text-slate-100 flex items-center gap-2">
+                <i data-lucide="download" class="w-5 h-5 text-indigo-400"></i>
+                <span>Download via gallery-dl</span>
+              </h2>
+            </div>
+
+            <form id="download-form" class="space-y-4">
+              <!-- URL input -->
+              <div>
+                <label for="download-url" class="block text-xs font-semibold text-slate-300 mb-1">
+                  Manga / Gallery URL <span class="text-rose-400">*</span>
+                </label>
+                <div class="relative">
+                  <input id="download-url" type="url" required placeholder="https://mangadex.org/title/... or pixiv / imgur" class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono" />
+                </div>
+              </div>
+
+              <!-- Folder name -->
+              <div>
+                <label for="download-folder" class="block text-xs font-semibold text-slate-300 mb-1">
+                  Custom Series / Folder Name <span class="text-slate-500 font-normal">(Optional)</span>
+                </label>
+                <input id="download-folder" type="text" placeholder="e.g. Solo Leveling (defaults to extractor name)" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500" />
+              </div>
+
+              <!-- Chapter Range -->
+              <div>
+                <label for="download-chapter-range" class="block text-xs font-semibold text-slate-300 mb-1">
+                  Chapter / Item Range <span class="text-slate-500 font-normal">(Optional, e.g. 1-5 or 10)</span>
+                </label>
+                <input id="download-chapter-range" type="text" placeholder="e.g. 1-10 or 1,2,5" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono" />
+              </div>
+
+              <!-- Checkbox Options -->
+              <div class="flex items-center gap-6 pt-1 text-xs text-slate-300">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input id="download-metadata" type="checkbox" checked class="rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500" />
+                  <span>Save Info JSON</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input id="download-cbz" type="checkbox" class="rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500" />
+                  <span>Package as CBZ</span>
+                </label>
+              </div>
+
+              <!-- Submit button -->
+              <button id="download-submit-btn" type="submit" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                <span>Start Download</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Quick Test Presets Card -->
+          <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-3">
+            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>Quick Presets & Test Links</span>
+            </h3>
+            <p class="text-xs text-slate-400">Click any preset to quickly test gallery-dl downloading:</p>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="window.downloaderManager.setPresetUrl('https://imgur.com/a/5eZ9r', 'Imgur Demo Album')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-indigo-600/30 hover:border-indigo-500/50 border border-slate-700 rounded-lg text-xs text-slate-300 transition-colors">
+                Imgur Album
+              </button>
+              <button onclick="window.downloaderManager.setPresetUrl('https://danbooru.donmai.us/posts?tags=cat_ears+order:rank&limit=5', 'Danbooru Cat Ears')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-indigo-600/30 hover:border-indigo-500/50 border border-slate-700 rounded-lg text-xs text-slate-300 transition-colors">
+                Danbooru (Top 5)
+              </button>
+              <button onclick="window.downloaderManager.setPresetUrl('https://mangadex.org/title/a1c7c817-4e59-43b7-9e05-01f63b804943', 'MangaDex Demo')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-indigo-600/30 hover:border-indigo-500/50 border border-slate-700 rounded-lg text-xs text-slate-300 transition-colors">
+                MangaDex Series
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Active Job Terminal & Task History (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+
+          <!-- Active Job Card -->
+          <div id="active-job-card" class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">Active Task</span>
+                <h3 id="active-job-title" class="text-sm font-bold text-slate-100 truncate max-w-md">No active task</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="active-job-status" class="px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase bg-slate-800 text-slate-400">Idle</span>
+                <button id="active-job-cancel-btn" class="hidden px-2.5 py-1 bg-rose-900/40 hover:bg-rose-900 text-rose-300 rounded-lg text-xs font-semibold border border-rose-800 transition-colors">
+                  Cancel
+                </button>
+              </div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs text-slate-400">
+                <span id="active-job-file" class="truncate max-w-xs">Waiting for download...</span>
+                <span id="active-job-progress" class="font-mono font-bold text-indigo-400">0%</span>
+              </div>
+              <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                <div id="active-job-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-pink-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Terminal output window -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs text-slate-400">
+                <span class="flex items-center gap-1.5 font-mono">
+                  <i data-lucide="terminal" class="w-3.5 h-3.5 text-indigo-400"></i>
+                  gallery-dl live stdout
+                </span>
+                <button id="clear-terminal-btn" class="text-[11px] hover:text-slate-200 transition-colors">Clear output</button>
+              </div>
+              <div id="terminal-logs" class="terminal-window p-3 rounded-xl h-48 overflow-y-auto space-y-0.5 text-xs">
+                <div class="text-slate-500 font-mono">[Ready] Submit a URL above to start live streaming download output...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tasks History Table -->
+          <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-800/80 flex items-center justify-between">
+              <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                <i data-lucide="history" class="w-4 h-4 text-slate-400"></i>
+                <span>Download History</span>
+              </h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-500 bg-slate-900/40">
+                    <th class="px-4 py-2.5 font-semibold">ID</th>
+                    <th class="px-4 py-2.5 font-semibold">Source</th>
+                    <th class="px-4 py-2.5 font-semibold">Status</th>
+                    <th class="px-4 py-2.5 font-semibold">Files</th>
+                    <th class="px-4 py-2.5 font-semibold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="jobs-table-body">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: SUPPORTED SITES ==================== -->
+    <section data-tab-content="sites" class="hidden space-y-6">
+      <div class="glass-panel p-6 rounded-2xl border border-slate-800">
+        <h2 class="text-base font-bold text-slate-100 flex items-center gap-2">
+          <i data-lucide="globe" class="w-5 h-5 text-indigo-400"></i>
+          <span>Popular Supported Sites</span>
+        </h2>
+        <p class="text-xs text-slate-400 mt-1">
+          gallery-dl natively supports over 100+ sites. Below are top manga, comic, and image gallery sources:
+        </p>
+      </div>
+
+      <div id="supported-sites-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Rendered dynamically via app.js -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== INBUILT MANGA READER OVERLAY ==================== -->
+  <div id="reader-modal" class="hidden fixed inset-0 z-50 bg-[#07080c] text-white flex flex-col select-none">
+
+    <!-- Top Floating Toolbar -->
+    <header id="reader-topbar" class="reader-toolbar fixed top-0 left-0 right-0 z-40 px-4 py-3 flex items-center justify-between border-b border-slate-800/60">
+      <!-- Left: Back Button & Title -->
+      <div class="flex items-center gap-3">
+        <button onclick="window.mangaReader.close()" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 transition-colors" title="Exit Reader (Esc)">
+          <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </button>
+        <div>
+          <h2 id="reader-title" class="font-bold text-sm text-slate-100 truncate max-w-xs sm:max-w-md">Manga Title</h2>
+          <span id="reader-page-indicator" class="text-xs text-slate-400 font-mono">Page 1 / 1</span>
+        </div>
+      </div>
+
+      <!-- Center: Chapter Selector -->
+      <div class="hidden sm:flex items-center gap-2">
+        <button onclick="window.mangaReader.prevChapter()" class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300" title="Previous Chapter">
+          <i data-lucide="chevron-left" class="w-4 h-4"></i>
+        </button>
+        <select id="reader-chapter-select" class="px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-medium max-w-[220px]">
+          <!-- Chapters rendered here -->
+        </select>
+        <button onclick="window.mangaReader.nextChapter()" class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300" title="Next Chapter">
+          <i data-lucide="chevron-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Right: Fit Modes, Layout Modes, Fullscreen, Close -->
+      <div class="flex items-center gap-2">
+
+        <!-- PROMINENT FIT WIDE BUTTON (As requested!) -->
+        <button id="reader-wide-btn" onclick="window.mangaReader.toggleWide()" class="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 bg-indigo-600 text-white ring-2 ring-indigo-400 shadow-lg shadow-indigo-600/30 transition-all" title="Fit to Screen Width (Wide Mode) [W]">
+          <i data-lucide="move-horizontal" class="w-4 h-4"></i>
+          <span>Fit Wide</span>
+          <span class="text-[10px] opacity-75 font-mono px-1 rounded bg-black/30">W</span>
+        </button>
+
+        <!-- Fit Modes Dropdown -->
+        <select id="reader-fit-select" onchange="window.mangaReader.setFitMode(this.value)" class="hidden md:block px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none font-medium">
+          <option value="wide">Fit Wide (100% Width)</option>
+          <option value="screen">Fit Screen (Contain)</option>
+          <option value="height">Fit Height (100% Height)</option>
+          <option value="original">Original (1:1)</option>
+        </select>
+
+        <!-- Reading Layout Selector -->
+        <select id="reader-layout-select" onchange="window.mangaReader.setLayoutMode(this.value)" class="hidden md:block px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs text-slate-200 focus:outline-none font-medium">
+          <option value="single">Single Page</option>
+          <option value="double">Double Spread</option>
+          <option value="webtoon">Webtoon (Long Strip)</option>
+        </select>
+
+        <!-- SMART BOOKMARK BUTTON -->
+        <button id="reader-bookmark-btn" onclick="window.mangaReader.manualBookmark()" class="p-2 rounded-xl bg-slate-800/80 hover:bg-indigo-600/30 hover:border-indigo-500/50 border border-slate-700/60 text-slate-300 transition-colors" title="Save Bookmark (B)">
+          <i data-lucide="bookmark" class="w-5 h-5"></i>
+        </button>
+
+        <!-- FULLSCREEN BUTTON (As requested!) -->
+        <button id="reader-fullscreen-btn" onclick="window.mangaReader.toggleFullscreen()" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-200 transition-colors" title="Toggle Fullscreen (F)">
+          <i data-lucide="maximize" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Exit Reader Button -->
+        <button onclick="window.mangaReader.close()" class="p-2 rounded-xl bg-slate-800/80 hover:bg-rose-950 hover:text-rose-400 text-slate-300 transition-colors" title="Close Reader (Esc)">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Reader Canvas Viewport -->
+    <div id="reader-viewport" class="reader-viewport flex-1 fit-wide layout-single" tabindex="0">
+      <!-- Rendered dynamically by reader.js -->
+    </div>
+
+    <!-- Bottom Floating Scrubber Bar & Thumbnails -->
+    <footer id="reader-bottombar" class="reader-toolbar reader-bottombar fixed bottom-0 left-0 right-0 z-40 px-4 py-3 border-t border-slate-800/60 flex flex-col gap-2">
+      <!-- Scrubber Row -->
+      <div class="max-w-2xl mx-auto w-full flex items-center gap-3">
+        <button onclick="window.mangaReader.prevPage()" class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300" title="Previous Page (Left Arrow / A)">
+          <i data-lucide="chevron-left" class="w-4 h-4"></i>
+        </button>
+
+        <input id="reader-page-slider" type="range" min="1" max="1" value="1" class="flex-1 accent-indigo-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg" />
+
+        <button onclick="window.mangaReader.nextPage()" class="p-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300" title="Next Page (Right Arrow / Space / D)">
+          <i data-lucide="chevron-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Thumbnail Strip Carousel -->
+      <div id="reader-thumbnails" class="flex items-center gap-2 overflow-x-auto py-1 px-2 mx-auto max-w-full">
+        <!-- Rendered dynamically -->
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ==================== KEYBOARD SHORTCUTS MODAL ==================== -->
+  <div id="shortcuts-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-panel p-6 rounded-2xl border border-slate-700 max-w-md w-full space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
+          <i data-lucide="keyboard" class="w-5 h-5 text-indigo-400"></i>
+          <span>Reader Keyboard Shortcuts</span>
+        </h3>
+        <button id="close-shortcuts-btn" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="divide-y divide-slate-800 text-xs">
+        <div class="py-2 flex items-center justify-between">
+          <span class="text-slate-300">Fit Wide (Cover Screen Width)</span>
+          <kbd class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-indigo-300 font-mono font-bold">W</kbd>
+        </div>
+        <div class="py-2 flex items-center justify-between">
+          <span class="text-slate-300">Toggle Fullscreen</span>
+          <kbd class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-indigo-300 font-mono font-bold">F</kbd>
+        </div>
+        <div class="py-2 flex items-center justify-between">
+          <span class="text-slate-300">Fit Screen (Contain)</span>
+          <kbd class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-slate-300 font-mono font-bold">S</kbd>
+        </div>
+        <div class="py-2 flex items-center justify-between">
+          <span class="text-slate-300">Fit Height</span>
+          <kbd class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-slate-300 font-mono font-bold">H</kbd>
+        </div>
+        <div class="py-2 flex items-center justify-between">
+          <span class="text-slate-300">Cycle Reading Mode (Single / Double / Webtoon)</span>
+          <kbd class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-slate-300 font-mono font-bold">M</kbd>
+        </div>
+        <div class="py-2 flex items-center justify-between">
+          <span class="text-slate-300">Next Page / Scroll Webtoon</span>
+          <div class="flex gap-1">
+            <kbd class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-slate-300 font-mono font-bold">→</kbd>
+            <kbd class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-slate-300 font-mono font-bold">Space</kbd>
+            <kbd class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-slate-300 font-mono font-bold">D</kbd>
+          </div>
+        </div>
+        <div class="py-2 flex items-center justify-between">
+          <span class="text-slate-300">Previous Page</span>
+          <div class="flex gap-1">
+            <kbd class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-slate-300 font-mono font-bold">←</kbd>
+            <kbd class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-slate-300 font-mono font-bold">A</kbd>
+          </div>
+        </div>
+        <div class="py-2 flex items-center justify-between">
+          <span class="text-slate-300">Save Smart Bookmark</span>
+          <kbd class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-indigo-300 font-mono font-bold">B</kbd>
+        </div>
+        <div class="py-2 flex items-center justify-between">
+          <span class="text-slate-300">Exit Reader / Exit Fullscreen</span>
+          <kbd class="px-2 py-1 bg-slate-800 border border-slate-700 rounded text-slate-300 font-mono font-bold">Esc</kbd>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Scripts -->
+  <script src="/static/js/reader.js"></script>
+  <script src="/static/js/downloader.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
