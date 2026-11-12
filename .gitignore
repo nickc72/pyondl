@@ -1,0 +1,14 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python cache & compiled files
+__pycache__/
+*.py[cod]
+
+# Downloads directory
+downloads/*
+!downloads/.gitkeep
+
+# Logs & temp
+*.log
